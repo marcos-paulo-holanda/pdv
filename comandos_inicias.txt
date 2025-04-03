@@ -1,0 +1,8 @@
+npm install electron --save-dev
+npm install express sqlite3 jsonwebtoken bcryptjs cors
+npx create-react-app frontend
+
+npm install
+npm run build
+
+
