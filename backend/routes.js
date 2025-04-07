@@ -41,4 +41,67 @@ router.post("/saida", verifyToken, (req, res) => {
   });
 });
 
+// Listar todas as vendas
+router.get("/sales", verifyToken, (req, res) => {
+  db.all("SELECT * FROM sales ORDER BY created_at DESC", [], (err, rows) => {
+    if (err) return res.status(500).json({ error: "Erro ao buscar vendas" });
+    res.json(rows);
+  });
+});
+
+// Registrar uma nova venda
+router.post("/sales", verifyToken, (req, res) => {
+  const { items, total, payment_method } = req.body;
+  const jsonItems = JSON.stringify(items);
+  db.run("INSERT INTO sales (items, total, payment_method) VALUES (?, ?, ?)",
+    [jsonItems, total, payment_method], function (err) {
+      if (err) return res.status(500).json({ error: "Erro ao registrar venda" });
+      res.json({ success: true });
+    });
+});
+
+
+// Listar todos os produtos
+router.get("/products", verifyToken, (req, res) => {
+  db.all("SELECT * FROM products", [], (err, rows) => {
+    if (err) return res.status(500).json({ error: "Erro ao buscar produtos" });
+    res.json(rows);
+  });
+});
+
+// Adicionar novo produto
+router.post("/products", verifyToken, (req, res) => {
+  const { name, sku, price, quantity } = req.body;
+  db.run("INSERT INTO products (name, sku, price, quantity) VALUES (?, ?, ?, ?)",
+    [name, sku, price, quantity],
+    (err) => {
+      if (err) return res.status(400).json({ error: "Erro ao adicionar produto" });
+      res.json({ success: true });
+    }
+  );
+});
+
+// Atualizar produto
+router.put("/products/:id", verifyToken, (req, res) => {
+  const { name, sku, price, quantity } = req.body;
+  const { id } = req.params;
+  db.run("UPDATE products SET name=?, sku=?, price=?, quantity=? WHERE id=?",
+    [name, sku, price, quantity, id],
+    (err) => {
+      if (err) return res.status(500).json({ error: "Erro ao atualizar produto" });
+      res.json({ success: true });
+    }
+  );
+});
+
+// Excluir produto
+router.delete("/products/:id", verifyToken, (req, res) => {
+  const { id } = req.params;
+  db.run("DELETE FROM products WHERE id=?", [id], (err) => {
+    if (err) return res.status(500).json({ error: "Erro ao excluir produto" });
+    res.json({ success: true });
+  });
+});
+
+
 module.exports = router;

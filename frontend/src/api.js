@@ -1,5 +1,6 @@
 const API_URL = "http://localhost:3001/api";
 
+// 🔐 Login
 export async function login(username, password) {
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
@@ -9,25 +10,68 @@ export async function login(username, password) {
   return res.json();
 }
 
-export async function getProdutos(token) {
-  const res = await fetch(`${API_URL}/produtos`, {
+// 🔐 Cadastro de novo usuário
+export async function register(username, password, role) {
+  const res = await fetch(`${API_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password, role }),
+  });
+  return res.json();
+}
+
+// 🛒 Registro de venda
+export async function registerSale(token, items, total, payment_method) {
+  const res = await fetch(`${API_URL}/sales`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ items, total, payment_method })
+  });
+  return res.json();
+}
+
+// 📦 Estoque - buscar produtos
+export async function getProducts(token) {
+  const res = await fetch(`${API_URL}/products`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
 
-export async function entrada(token, name, quantity) {
-  await fetch(`${API_URL}/entrada`, {
+// 📦 Estoque - adicionar produto
+export async function addProduct(token, product) {
+  const res = await fetch(`${API_URL}/products`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ name, quantity }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(product),
   });
+  return res.json();
 }
 
-export async function saida(token, name, quantity) {
-  await fetch(`${API_URL}/saida`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ name, quantity }),
+// 📦 Estoque - editar produto
+export async function updateProduct(token, id, product) {
+  const res = await fetch(`${API_URL}/products/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(product),
   });
+  return res.json();
+}
+
+// 📦 Estoque - excluir produto
+export async function deleteProduct(token, id) {
+  const res = await fetch(`${API_URL}/products/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
 }
