@@ -17,11 +17,20 @@ db.serialize(() => {
     quantity INTEGER
   )`);
 
+  db.run(`CREATE TABLE IF NOT EXISTS customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    document TEXT,
+    phone TEXT,
+    email TEXT,
+    address TEXT
+  )`);
+  
   db.get("SELECT * FROM users WHERE username = 'admin'", (err, row) => {
     if (!row) {
       const bcrypt = require("bcryptjs");
       const hash = bcrypt.hashSync("1234", 10);
-      db.run("INSERT INTO users (username, password) VALUES (?, ?)", ["admin", hash]);
+      db.run("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", ["admin", hash, "admin"]);
     }
   });
 });

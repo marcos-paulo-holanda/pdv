@@ -7,6 +7,7 @@ import {
 } from "../../api";
 
 function Inventory({ token }) {
+  console.log("Inventory carregado!");
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState({ name: "", sku: "", price: "", quantity: "" });
   const [editingId, setEditingId] = useState(null);
