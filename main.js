@@ -6,6 +6,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1000,
     height: 700,
+    icon: path.join(__dirname, 'frontend', 'public', 'favicon.ico'),
     webPreferences: {
       contextIsolation: false,
       nodeIntegration: true,

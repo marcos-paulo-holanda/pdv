@@ -22,7 +22,7 @@ function App() {
       <Sidebar />
       <div style={{ marginLeft: "220px", marginTop: "90px", padding: "20px" }}>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard token={token}/>} />
           <Route path="/sales" element={<Sales token={token} />} />
           <Route path="/inventory" element={<Inventory token={token} />} />
           <Route path="/customers" element={<Customers token={token} />} />

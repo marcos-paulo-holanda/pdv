@@ -8,8 +8,8 @@ function Sidebar() {
       <button style={styles.link} onClick={() => navigate("/")}>Dashboard</button>
       <button style={styles.link} onClick={() => navigate("/sales")}>Vendas</button>
       <button style={styles.link} onClick={() => navigate("/inventory")}>Estoque</button>
-      <button style={styles.link} onClick={() => navigate("/customers")}>Clientes</button>
-      <button style={styles.link} onClick={() => navigate("/suppliers")}>Fornecedores</button>
+      {/* <button style={styles.link} onClick={() => navigate("/customers")}>Clientes</button> */}
+      {/* <button style={styles.link} onClick={() => navigate("/suppliers")}>Fornecedores</button> */}
       <button style={{ ...styles.link, color: "red" }} onClick={() => window.location.reload()}>Sair</button>
     </aside>
   );

@@ -141,4 +141,80 @@ router.delete("/customers/:id", verifyToken, (req, res) => {
   });
 });
 
+// Listar fornecedores
+router.get("/suppliers", verifyToken, (req, res) => {
+  db.all("SELECT * FROM suppliers", [], (err, rows) => {
+    if (err) return res.status(500).json({ error: "Erro ao buscar fornecedores" });
+    res.json(rows);
+  });
+});
+
+// Cadastrar fornecedor
+router.post("/suppliers", verifyToken, (req, res) => {
+  const { name, document, phone, email, address } = req.body;
+  db.run("INSERT INTO suppliers (name, document, phone, email, address) VALUES (?, ?, ?, ?, ?)",
+    [name, document, phone, email, address],
+    err => {
+      if (err) return res.status(500).json({ error: "Erro ao adicionar fornecedor" });
+      res.json({ success: true });
+    });
+});
+
+// Atualizar fornecedor
+router.put("/suppliers/:id", verifyToken, (req, res) => {
+  const { name, document, phone, email, address } = req.body;
+  db.run("UPDATE suppliers SET name=?, document=?, phone=?, email=?, address=? WHERE id=?",
+    [name, document, phone, email, address, req.params.id],
+    err => {
+      if (err) return res.status(500).json({ error: "Erro ao atualizar fornecedor" });
+      res.json({ success: true });
+    });
+});
+
+// Excluir fornecedor
+router.delete("/suppliers/:id", verifyToken, (req, res) => {
+  db.run("DELETE FROM suppliers WHERE id=?", [req.params.id], err => {
+    if (err) return res.status(500).json({ error: "Erro ao excluir fornecedor" });
+    res.json({ success: true });
+  });
+});
+
+router.get("/metrics", verifyToken, (req, res) => {
+  db.serialize(() => {
+    let totalRevenue = 0;
+    let salesCount = 0;
+    let productCount = 0;
+
+    db.all("SELECT total FROM sales", [], (err, sales) => {
+      if (sales) {
+        totalRevenue = sales.reduce((sum, s) => sum + s.total, 0);
+        salesCount = sales.length;
+      }
+
+      db.get("SELECT COUNT(*) as count FROM products", (err, row) => {
+        if (row) productCount = row.count;
+
+        res.json({
+          totalRevenue,
+          salesCount,
+          productCount,
+        });
+      });
+    });
+  });
+});
+
+router.get("/sales/today", verifyToken, (req, res) => {
+  const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+  db.all(
+    "SELECT * FROM sales WHERE date(created_at) = ? ORDER BY created_at DESC",
+    [today],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: "Erro ao buscar vendas" });
+      res.json(rows);
+    }
+  );
+});
+
+
 module.exports = router;

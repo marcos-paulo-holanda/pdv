@@ -25,6 +25,15 @@ db.serialize(() => {
     email TEXT,
     address TEXT
   )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS suppliers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    document TEXT,
+    phone TEXT,
+    email TEXT,
+    address TEXT
+  )`);  
   
   db.get("SELECT * FROM users WHERE username = 'admin'", (err, row) => {
     if (!row) {
