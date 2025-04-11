@@ -3,17 +3,23 @@
     "version": "1.0.0",
     "main": "main.js",
     "scripts": {
-      "start": "electron ."
+        "start": "electron ."
     },
     "devDependencies": {
-      "electron": "^28.2.0"
+        "electron": "^28.3.3"
     },
     "build": {
-    "appId": "com.seuapp.pdvigor",
-    "productName": "PDVigor",
-    "win": {
-      "icon": "frontend/public/favicon.ico"
+        "appId": "com.seuapp.pdvigor",
+        "productName": "PDVigor",
+        "win": {
+            "icon": "frontend/public/favicon.ico"
+        }
+    },
+    "dependencies": {
+        "bcryptjs": "^3.0.2",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "sqlite3": "^5.1.7"
     }
-   }
-  }
-  
+}

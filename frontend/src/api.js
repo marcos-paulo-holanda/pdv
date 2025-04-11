@@ -20,6 +20,23 @@ export async function register(username, password, role) {
   return res.json();
 }
 
+// 🔐 Visualizar todos usuários
+export async function getUsers(token) {
+  const res = await fetch(`${API_URL}/users`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+// 🔐 Deletar Usuário
+export async function deleteUser(token, id) {
+  const res = await fetch(`${API_URL}/users/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
 // 🛒 Registro de venda
 export async function registerSale(token, items, total, payment_method) {
   const res = await fetch(`${API_URL}/sales`, {
@@ -168,6 +185,8 @@ export async function getTodaySales(token) {
   });
   return res.json();
 }
+
+
 
 
 

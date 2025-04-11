@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { login, register } from "../api";
+import { login } from "../api";
 
 function Login({ onLogin }) {
-  const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("cashier");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -13,40 +11,28 @@ function Login({ onLogin }) {
     e.preventDefault();
     setError("");
 
-    if (!username || !password || (isRegistering && !role)) {
+    if (!username || !password) {
       setError("Preencha todos os campos.");
       return;
     }
 
     setLoading(true);
     try {
-      if (isRegistering) {
-        const result = await register(username, password, role);
-        if (result.success) {
-          alert("Usuário cadastrado com sucesso!");
-          setIsRegistering(false);
-          setUsername("");
-          setPassword("");
-        } else {
-          setError(result.message || "Erro ao cadastrar usuário.");
-        }
+      const result = await login(username, password);
+      if (result.token && result.role) {
+        onLogin(result.token, result.role);
       } else {
-        const result = await login(username, password);
-        if (result.token) {
-          onLogin(result.token);
-        } else {
-          setError("Usuário ou senha inválidos.");
-        }
+        setError("Usuário ou senha inválidos.");
       }
     } catch (err) {
-      setError("Erro na comunicação com o servidor.");
+      setError("Erro ao tentar fazer login.");
     }
     setLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} style={styles.form}>
-      <h2>{isRegistering ? "Cadastro" : "Login"}</h2>
+      <h2>Login</h2>
 
       <div style={styles.inputGroup}>
         <label htmlFor="username">Usuário</label>
@@ -70,34 +56,11 @@ function Login({ onLogin }) {
         />
       </div>
 
-      {isRegistering && (
-        <div style={styles.inputGroup}>
-          <label htmlFor="role">Tipo de Usuário</label>
-          <select
-            id="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            style={styles.input}
-          >
-            <option value="cashier">Caixa</option>
-            <option value="admin">Administrador</option>
-          </select>
-        </div>
-      )}
-
       {error && <p style={styles.error}>{error}</p>}
 
       <button type="submit" style={styles.button} disabled={loading}>
-        {loading ? "Aguarde..." : isRegistering ? "Cadastrar" : "Entrar"}
+        {loading ? "Entrando..." : "Entrar"}
       </button>
-
-      <p style={{ marginTop: "10px", cursor: "pointer", color: "#007bff" }}
-         onClick={() => {
-           setIsRegistering(!isRegistering);
-           setError("");
-         }}>
-        {isRegistering ? "Já tem conta? Faça login" : "Não tem conta? Cadastre-se"}
-      </p>
     </form>
   );
 }

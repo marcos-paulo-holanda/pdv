@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ role }) {
   const navigate = useNavigate();
 
   return (
@@ -10,6 +10,13 @@ function Sidebar() {
       <button style={styles.link} onClick={() => navigate("/inventory")}>Estoque</button>
       {/* <button style={styles.link} onClick={() => navigate("/customers")}>Clientes</button> */}
       {/* <button style={styles.link} onClick={() => navigate("/suppliers")}>Fornecedores</button> */}
+
+      {role === "admin" && (
+        <button style={styles.link} onClick={() => navigate("/register-user")}>
+          Cadastro de Usuário
+        </button>
+      )}
+
       <button style={{ ...styles.link, color: "red" }} onClick={() => window.location.reload()}>Sair</button>
     </aside>
   );

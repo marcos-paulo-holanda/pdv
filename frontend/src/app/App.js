@@ -8,18 +8,23 @@ import Customers from "./dashboard/Customers";
 import Suppliers from "./dashboard/Suppliers";
 import Header from "../layout/Header";
 import Sidebar from "../layout/Sidebar";
+import RegisterUser from "./dashboard/RegisterUser";
 
 function App() {
   const [token, setToken] = useState(null);
+  const [role, setRole] = useState(null);
 
   if (!token) {
-    return <Login onLogin={setToken} />;
+    return <Login onLogin={(tk, rl) => {
+      setToken(tk);
+      setRole(rl);
+    }} />;
   }
 
   return (
     <Router>
       <Header />
-      <Sidebar />
+      <Sidebar role={role} /> 
       <div style={{ marginLeft: "220px", marginTop: "90px", padding: "20px" }}>
         <Routes>
           <Route path="/" element={<Dashboard token={token}/>} />
@@ -27,6 +32,7 @@ function App() {
           <Route path="/inventory" element={<Inventory token={token} />} />
           <Route path="/customers" element={<Customers token={token} />} />
           <Route path="/suppliers" element={<Suppliers token={token} />} />
+          <Route path="/register-user" element={<RegisterUser token={token} />} />
         </Routes>
       </div>
     </Router>
