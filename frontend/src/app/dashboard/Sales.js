@@ -1,31 +1,47 @@
 import { useState, useEffect } from "react";
-import { registerSale, getTodaySales } from "../../api";
+import { registerSale, getTodaySales, getProducts } from "../../api";
 
 function Sales({ token }) {
   const [cart, setCart] = useState([]);
   const [productName, setProductName] = useState("");
+  const [sku, setSku] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [products, setProducts] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("dinheiro");
   const [salesToday, setSalesToday] = useState([]);
+
+  useEffect(() => {
+    loadSales();
+    loadProducts();
+  }, []);
 
   const loadSales = async () => {
     const data = await getTodaySales(token);
     setSalesToday(data);
   };
 
-  useEffect(() => {
-    loadSales();
-  }, []);
+  const loadProducts = async () => {
+    const list = await getProducts(token);
+    setProducts(list);
+  };
 
   const addToCart = () => {
-    if (!productName || !price || quantity <= 0) return;
-    setCart([...cart, {
-      name: productName,
-      price: parseFloat(price),
-      quantity: parseInt(quantity)
-    }]);
+    if (!productName || !price || quantity <= 0 || !sku) return;
+
+    setCart([
+      ...cart,
+      {
+        sku,
+        name: productName,
+        price: parseFloat(price),
+        quantity: parseInt(quantity),
+      },
+    ]);
+
+    // limpar campos
     setProductName("");
+    setSku("");
     setPrice("");
     setQuantity(1);
   };
@@ -36,6 +52,26 @@ function Sales({ token }) {
     alert("Venda registrada!");
     setCart([]);
     loadSales();
+    loadProducts(); // opcional: recarrega estoque atualizado
+  };
+
+  // 🔄 sincroniza nome ↔ sku
+  const handleProductNameChange = (value) => {
+    setProductName(value);
+    const found = products.find((p) => p.name.toLowerCase() === value.toLowerCase());
+    if (found) {
+      setSku(found.sku);
+      setPrice(found.price);
+    }
+  };
+
+  const handleSkuChange = (value) => {
+    setSku(value);
+    const found = products.find((p) => p.sku.toLowerCase() === value.toLowerCase());
+    if (found) {
+      setProductName(found.name);
+      setPrice(found.price);
+    }
   };
 
   const totalCart = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -46,11 +82,25 @@ function Sales({ token }) {
 
       <div style={styles.form}>
         <input
+          list="product-names"
           placeholder="Produto"
           value={productName}
-          onChange={(e) => setProductName(e.target.value)}
+          onChange={(e) => handleProductNameChange(e.target.value)}
           style={styles.input}
         />
+        <datalist id="product-names">
+          {products.map((p) => (
+            <option key={p.id} value={p.name} />
+          ))}
+        </datalist>
+
+        <input
+          placeholder="SKU"
+          value={sku}
+          onChange={(e) => handleSkuChange(e.target.value)}
+          style={styles.input}
+        />
+
         <input
           placeholder="Preço"
           type="number"
@@ -58,6 +108,7 @@ function Sales({ token }) {
           onChange={(e) => setPrice(e.target.value)}
           style={styles.input}
         />
+
         <input
           placeholder="Qtd"
           type="number"
@@ -65,6 +116,7 @@ function Sales({ token }) {
           onChange={(e) => setQuantity(e.target.value)}
           style={styles.input}
         />
+
         <button onClick={addToCart} style={styles.addButton}>Adicionar</button>
       </div>
 
@@ -75,6 +127,7 @@ function Sales({ token }) {
             <thead>
               <tr>
                 <th style={styles.th}>Produto</th>
+                <th style={styles.th}>SKU</th>
                 <th style={styles.th}>Qtd</th>
                 <th style={styles.th}>Preço</th>
                 <th style={styles.th}>Total</th>
@@ -84,6 +137,7 @@ function Sales({ token }) {
               {cart.map((item, i) => (
                 <tr key={i}>
                   <td style={styles.td}>{item.name}</td>
+                  <td style={styles.td}>{item.sku}</td>
                   <td style={styles.td}>{item.quantity}</td>
                   <td style={styles.td}>R$ {item.price.toFixed(2)}</td>
                   <td style={styles.td}>R$ {(item.price * item.quantity).toFixed(2)}</td>
@@ -118,29 +172,29 @@ function Sales({ token }) {
             <th style={styles.th}>Pagamento</th>
           </tr>
         </thead>
-          <tbody>
-            {salesToday.map((sale) => {
-              const items = JSON.parse(sale.items);
-              return (
-                <tr key={sale.id}>
-                  <td style={styles.td}>
-                    {new Date(sale.created_at).toLocaleString("pt-BR")}
-                  </td>
-                  <td style={styles.td}>
-                    {items.map((i, idx) => (
-                      <div key={idx}>{i.name}</div>
-                    ))}
-                  </td>
-                  <td style={styles.td}>
-                    {items.map((i, idx) => (
-                      <div key={idx}>{i.quantity}</div>
-                    ))}
-                  </td>
-                  <td style={styles.td}>R$ {sale.total.toFixed(2)}</td>
-                  <td style={styles.td}>{sale.payment_method}</td>
-                </tr>
-              );
-            })}
+        <tbody>
+          {salesToday.map((sale) => {
+            const items = JSON.parse(sale.items);
+            return (
+              <tr key={sale.id}>
+                <td style={styles.td}>
+                  {new Date(sale.created_at).toLocaleString("pt-BR")}
+                </td>
+                <td style={styles.td}>
+                  {items.map((i, idx) => (
+                    <div key={idx}>{i.name}</div>
+                  ))}
+                </td>
+                <td style={styles.td}>
+                  {items.map((i, idx) => (
+                    <div key={idx}>{i.quantity}</div>
+                  ))}
+                </td>
+                <td style={styles.td}>R$ {sale.total.toFixed(2)}</td>
+                <td style={styles.td}>{sale.payment_method}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
