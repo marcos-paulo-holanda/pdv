@@ -74,19 +74,19 @@ function Sales({ token }) {
           <table style={styles.table}>
             <thead>
               <tr>
-                <th>Produto</th>
-                <th>Qtd</th>
-                <th>Preço</th>
-                <th>Total</th>
+                <th style={styles.th}>Produto</th>
+                <th style={styles.th}>Qtd</th>
+                <th style={styles.th}>Preço</th>
+                <th style={styles.th}>Total</th>
               </tr>
             </thead>
             <tbody>
               {cart.map((item, i) => (
                 <tr key={i}>
-                  <td>{item.name}</td>
-                  <td>{item.quantity}</td>
-                  <td>R$ {item.price.toFixed(2)}</td>
-                  <td>R$ {(item.price * item.quantity).toFixed(2)}</td>
+                  <td style={styles.td}>{item.name}</td>
+                  <td style={styles.td}>{item.quantity}</td>
+                  <td style={styles.td}>R$ {item.price.toFixed(2)}</td>
+                  <td style={styles.td}>R$ {(item.price * item.quantity).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -111,25 +111,36 @@ function Sales({ token }) {
       <table style={styles.table}>
         <thead>
           <tr>
-            <th>Data/Hora</th>
-            <th>Itens</th>
-            <th>Total</th>
-            <th>Pagamento</th>
+            <th style={styles.th}>Data/Hora</th>
+            <th style={styles.th}>Descrição Itens</th>
+            <th style={styles.th}>Qtd</th>
+            <th style={styles.th}>Total</th>
+            <th style={styles.th}>Pagamento</th>
           </tr>
         </thead>
-        <tbody>
-          {salesToday.map((sale) => (
-            <tr key={sale.id}>
-              <td>{new Date(sale.created_at).toLocaleString("pt-BR")}</td>
-              <td>
-                {JSON.parse(sale.items).map((i, idx) => (
-                  <div key={idx}>{i.name} x{i.quantity}</div>
-                ))}
-              </td>
-              <td>R$ {sale.total.toFixed(2)}</td>
-              <td>{sale.payment_method}</td>
-            </tr>
-          ))}
+          <tbody>
+            {salesToday.map((sale) => {
+              const items = JSON.parse(sale.items);
+              return (
+                <tr key={sale.id}>
+                  <td style={styles.td}>
+                    {new Date(sale.created_at).toLocaleString("pt-BR")}
+                  </td>
+                  <td style={styles.td}>
+                    {items.map((i, idx) => (
+                      <div key={idx}>{i.name}</div>
+                    ))}
+                  </td>
+                  <td style={styles.td}>
+                    {items.map((i, idx) => (
+                      <div key={idx}>{i.quantity}</div>
+                    ))}
+                  </td>
+                  <td style={styles.td}>R$ {sale.total.toFixed(2)}</td>
+                  <td style={styles.td}>{sale.payment_method}</td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>
@@ -157,7 +168,21 @@ const styles = {
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    marginTop: "10px"
+    marginTop: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    overflow: "hidden",
+  },
+  td: {
+    border: "1px solid #ccc",
+    padding: "8px",
+    textAlign: "center"
+  },
+  th: {
+    border: "1px solid #ccc",
+    padding: "8px",
+    backgroundColor: "#f0f0f0",
+    textAlign: "center"
   },
   paymentSection: {
     marginTop: "10px",

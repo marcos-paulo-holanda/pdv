@@ -83,17 +83,17 @@ function RegisterUser({ token }) {
       <table style={styles.table}>
         <thead>
           <tr>
-            <th>Usuário</th>
-            <th>Tipo</th>
-            <th>Ações</th>
+            <th style={styles.th}>Usuário</th>
+            <th style={styles.th}>Tipo</th>
+            <th style={styles.th}>Ações</th>
           </tr>
         </thead>
         <tbody>
           {users.map((u) => (
             <tr key={u.id}>
-              <td>{u.username}</td>
-              <td>{u.role}</td>
-              <td>
+              <td style={styles.td}>{u.username}</td>
+              <td style={styles.td}>{u.role}</td>
+              <td style={styles.td}>
                 <button onClick={() => handleDelete(u.id)} style={styles.deleteButton}>
                   Excluir
                 </button>
@@ -146,6 +146,20 @@ const styles = {
     width: "100%",
     borderCollapse: "collapse",
     marginTop: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    overflow: "hidden"
+  },
+  th: {
+    border: "1px solid #ccc",
+    padding: "8px",
+    backgroundColor: "#f0f0f0",
+    textAlign: "center"
+  },
+  td: {
+    border: "1px solid #ccc",
+    padding: "8px",
+    textAlign: "center"
   },
   error: {
     color: "red",
